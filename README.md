@@ -15,3 +15,7 @@ Problem Set 1
 Problem Set 2
 
 - Implementation of the Hangman Game: Using control flow mechanisms and functions
+
+Problem Set 3
+
+- Implementation of the Word Game (Scrabble/Words With Friends): Modularization and Unit Testing
