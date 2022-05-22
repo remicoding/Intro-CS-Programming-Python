@@ -18,7 +18,7 @@ SCRABBLE_LETTER_VALUES = {
     's': 1, 't': 1, 'u': 1, 'v': 4, 'w': 4, 'x': 8, 'y': 4, 'z': 10, '*':0
 }
 
-WORDLIST_FILENAME = "ps3/words.txt"
+WORDLIST_FILENAME = "words.txt"
 
 def load_words():
     """
