@@ -8,9 +8,9 @@ Problem Set 0
 
 Problem Set 1
 
-- Part A: House Hunting
-- Part B: Saving, with a raise
-- Part C: Finding the right amount to save away (bisection-search)
+- Part A - House Hunting
+- Part B - Saving, with a raise
+- Part C - Finding the right amount to save away (bisection-search)
 
 Problem Set 2
 
@@ -19,3 +19,7 @@ Problem Set 2
 Problem Set 3
 
 - Implementation of the Word Game (Scrabble/Words With Friends): Modularization and Unit Testing
+
+Problem Set 4
+
+- Part A - Permutation of a string: Recursion
