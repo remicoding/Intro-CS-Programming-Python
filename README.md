@@ -24,3 +24,4 @@ Problem Set 4
 
 - Part A - Permutation of a string: Recursion
 - Part B - Cipher Like Caesar: Classes and Inheritance
+- Part C - Substitution Cipher: Classes, Inheritance and Recursion
