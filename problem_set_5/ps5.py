@@ -124,34 +124,91 @@ class TitleTrigger(PhraseTrigger):
     def __init__(self, phrase):
         super().__init__(phrase)
 
-    def evaluate(self, news_story):
-        return self.is_phrase_in(news_story.get_title())
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_title())
 
 
 # Problem 4
 # TODO: DescriptionTrigger
+class DescriptionTrigger(PhraseTrigger):
+    def __init__(self, phrase):
+        super().__init__(phrase)
+
+    def evaluate(self, story):
+        return self.is_phrase_in(story.get_description())
+
 
 # TIME TRIGGERS
+
 
 # Problem 5
 # TODO: TimeTrigger
 # Constructor:
 #        Input: Time has to be in EST and in the format of "%d %b %Y %H:%M:%S".
 #        Convert time from string to a datetime before saving it as an attribute.
+class TimeTrigger(Trigger):
+    def __init__(self, time):
+        self.time = datetime.strptime(time, "%d %b %Y %H:%M:%S")
+
 
 # Problem 6
 # TODO: BeforeTrigger and AfterTrigger
+class BeforeTrigger(TimeTrigger):
+    def __init__(self, time):
+        super().__init__(time)
+
+    def evaluate(self, story):
+        if story.pubdate.tzinfo:
+            return story.pubdate < self.time.replace(
+                tzinfo=pytz.timezone("EST"))
+        return story.pubdate < self.time
+
+
+class AfterTrigger(TimeTrigger):
+    def __init__(self, time):
+        super().__init__(time)
+
+    def evaluate(self, story):
+        if story.pubdate.tzinfo:
+            return story.pubdate > self.time.replace(
+                tzinfo=pytz.timezone("EST"))
+        return story.pubdate > self.time
+
 
 # COMPOSITE TRIGGERS
 
+
 # Problem 7
 # TODO: NotTrigger
+class NotTrigger(Trigger):
+    def __init__(self, trigger):
+        self.trigger = trigger
+
+    def evaluate(self, story):
+        return not self.trigger.evaluate(story)
+
 
 # Problem 8
 # TODO: AndTrigger
+class AndTrigger(Trigger):
+    def __init__(self, trigger1, trigger2):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+
+    def evaluate(self, story):
+        return self.trigger1.evaluate(story) and self.trigger2.evaluate(story)
+
 
 # Problem 9
 # TODO: OrTrigger
+class OrTrigger(Trigger):
+    def __init__(self, trigger1, trigger2):
+        self.trigger1 = trigger1
+        self.trigger2 = trigger2
+
+    def evaluate(self, story):
+        return self.trigger1.evaluate(story) or self.trigger2.evaluate(story)
+
 
 #======================
 # Filtering
@@ -168,7 +225,12 @@ def filter_stories(stories, triggerlist):
     # TODO: Problem 10
     # This is a placeholder
     # (we're just returning all the stories, with no filtering)
-    return stories
+    filtered_stories = []
+    for trigger in triggerlist:
+        for story in stories:
+            if trigger.evaluate(story):
+                filtered_stories.append(story)
+    return filtered_stories
 
 
 #======================
@@ -205,9 +267,9 @@ def main_thread(master):
     # A sample trigger list - you might need to change the phrases to correspond
     # to what is currently in the news
     try:
-        t1 = TitleTrigger("election")
-        t2 = DescriptionTrigger("Trump")
-        t3 = DescriptionTrigger("Clinton")
+        t1 = TitleTrigger("Gun")
+        t2 = DescriptionTrigger("Texas")
+        t3 = DescriptionTrigger("New York")
         t4 = AndTrigger(t2, t3)
         triggerlist = [t1, t4]
 
@@ -258,7 +320,7 @@ def main_thread(master):
             stories = process("http://news.google.com/news?output=rss")
 
             # Get stories from Yahoo's Top Stories RSS news feed
-            stories.extend(process("http://news.yahoo.com/rss/topstories"))
+            # stories.extend(process("http://news.yahoo.com/rss/topstories"))
 
             stories = filter_stories(stories, triggerlist)
 
