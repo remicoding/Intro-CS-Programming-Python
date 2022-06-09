@@ -246,18 +246,47 @@ def read_trigger_config(filename):
     """
     # We give you the code to read in the file and eliminate blank lines and
     # comments. You don't need to know how it works for now!
-    trigger_file = open(filename, 'r')
-    lines = []
-    for line in trigger_file:
-        line = line.rstrip()
-        if not (len(line) == 0 or line.startswith('//')):
-            lines.append(line)
+    with open(filename, 'r') as trigger_file:
+        lines = []
+        for line in trigger_file:
+            line = line.rstrip()
+            if not (len(line) == 0 or line.startswith('//')):
+                lines.append(line)
 
-    # TODO: Problem 11
-    # line is the list of lines that you need to parse and for which you need
-    # to build triggers
+        # TODO: Problem 11
+        # line is the list of lines that you need to parse and for which you need
+        # to build triggers
+        triggers_dct = {}
+        trigger_lst = []
+        for line in lines:
+            if "TITLE" in line:
+                trigger_name, _, phrase = line.split(",")
+                triggers_dct[trigger_name] = TitleTrigger(phrase)
+            elif "DESCRIPTION" in line:
+                trigger_name, _, phrase = line.split(",")
+                triggers_dct[trigger_name] = DescriptionTrigger(phrase)
+            elif "AFTER" in line:
+                trigger_name, _, time = line.split(",")
+                triggers_dct[trigger_name] = AfterTrigger(time)
+            elif "BEFORE" in line:
+                trigger_name, _, time = line.split(",")
+                triggers_dct[trigger_name] = BeforeTrigger(time)
+            elif "NOT" in line:
+                trigger_name, _, trigger = line.split(",")
+                triggers_dct[trigger_name] = NotTrigger(triggers_dct[trigger])
+            elif "AND" in line:
+                trigger_name, _, trigger1, trigger2 = line.split(",")
+                triggers_dct[trigger_name] = AndTrigger(
+                    triggers_dct[trigger1], triggers_dct[trigger2])
+            elif "OR" in line:
+                trigger_name, _, trigger1, trigger2 = line.split(",")
+                triggers_dct[trigger_name] = OrTrigger(triggers_dct[trigger1],
+                                                       triggers_dct[trigger2])
+            elif "ADD" in line:
+                for trigger in line.split(",")[1:]:
+                    trigger_lst.append(triggers_dct[trigger])
 
-    print(lines)  # for now, print it so you see what it contains!
+        return trigger_lst  # for now, print it so you see what it contains!
 
 
 SLEEPTIME = 120  #seconds -- how often we poll
@@ -275,7 +304,7 @@ def main_thread(master):
 
         # Problem 11
         # TODO: After implementing read_trigger_config, uncomment this line
-        # triggerlist = read_trigger_config('triggers.txt')
+        triggerlist = read_trigger_config('triggers.txt')
 
         # HELPER CODE - you don't need to understand this!
         # Draws the popup window that displays the filtered stories
